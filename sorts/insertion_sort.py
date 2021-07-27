@@ -3,6 +3,15 @@ from copy import copy
 
 
 def insertion_sort(l: List[int]):
+    '''
+    iter from idx 1 to last idx, called i
+        iter from idx i-1 to 0, called j
+            if val(j+1) < val(j)
+                swap(j, j+1)
+                continue
+            else
+                break
+    '''
     if len(l) <= 1:
         return l
     for i in range(1, len(l)):
