@@ -1,51 +1,89 @@
-from typing import List
 from copy import copy
 
 
-def partition(arr: list, idx_of_pivot: int) -> (list, list):
-    lt = []
-    gte = []
-    for i in range(len(arr)):
-        if i == idx_of_pivot:
-            continue
-        if arr[i] < arr[idx_of_pivot]:
-            lt.append(arr[i])
+def swap(arr: list, i: int, j: int):
+    arr[i], arr[j] = arr[j], arr[i]
+
+
+def partition(arr: list, start: int, end: int, pivot: int) -> int:
+    '''
+    swap(pivot, end)
+    cur pivot index = end
+    while cur pivot index -1 > last index of less then val(pivot)
+        if val(cur pivot index - 1) > val(cur pivot index)
+            swap(cur pivot index - 1, cur pivot index)
+            cur pivot index --
+        else
+            swap(cur pivot index - 1, last index of less then val(pivot))
+            last index of less then val(pivot) ++
+    '''
+    swap(arr, end, pivot)
+    new_pivot_idx = end
+    last_lt_pivot_idx = start - 1
+    while new_pivot_idx-1 > last_lt_pivot_idx:
+        if arr[new_pivot_idx-1] > arr[new_pivot_idx]:
+            swap(arr, new_pivot_idx-1, new_pivot_idx)
+            new_pivot_idx -= 1
         else:
-            gte.append(arr[i])
+            last_lt_pivot_idx += 1
+            swap(arr, new_pivot_idx-1, last_lt_pivot_idx)
 
-    return lt, gte
+    return new_pivot_idx
 
 
-def quick_sort(l: List[int]):
+def quick_sort(arr: list):
     '''
     1. pick pivot of array
-    2. partition array by pivot, after partition, got two arrays, the one is
-    all the value of array less then value of pivot, the other one is all the
-    value of array greate then equal value of pivot
-    3. continue 1 then 2 until length of array is 1
+    2. partition array by pivot
+    3. continue 1 and 2 until length of array is 1
     '''
-    if len(l) <= 1:
-        return l
+    if len(arr) <= 1:
+        return arr
 
-    val_of_pivot = l[-1]
-    lt, gte = partition(l, len(l)-1)
+    def _quick_sort(arr: list, start: int, end: int, pivot: int) -> list:
+        new_pivot_idx = partition(arr, start, end, pivot)
+        if new_pivot_idx > start + 1:
+            _quick_sort(arr, start, new_pivot_idx - 1, new_pivot_idx - 1)
+        if new_pivot_idx < end - 1:
+            _quick_sort(arr, new_pivot_idx + 1, end, end)
 
-    ans = quick_sort(lt)
-    ans.append(val_of_pivot)
-    ans.extend(quick_sort(gte))
-    return ans
+        return arr
+
+    return _quick_sort(arr, 0, len(arr)-1, len(arr)-1)
+
+
+def simple_quick_sort(arr: list):
+    if len(arr) <= 1:
+        return arr
+
+    return (simple_quick_sort([e for e in arr[1:] if e < arr[0]]) +
+            [arr[0]] +
+            simple_quick_sort([e for e in arr[1:] if e >= arr[0]]))
 
 
 if __name__ == '__main__':
     test_cases = [
         [],
         [0],
-        [-1, -2, 1, 2, 3, 4],
-        [4, 3, 2, 1, 0, -1, -2],
+        [-1, -2, 1, 2, 2, 3, 4],
+        [4, 3, 2, 2, 1, 0, -1, -2],
         [5, 2, 5, 7, 1, 63, 67, 2, 6]
     ]
     for test_case in test_cases:
         input = copy(test_case)
         expected = sorted(test_case)
         actual = quick_sort(test_case)
-        assert expected == actual, f'{input=}, {expected=}, {actual=}'
+        assert expected == actual, f'quick_sort fail: {input=}, {expected=}, {actual=}'
+
+    test_cases = [
+        [],
+        [0],
+        [-1, -2, 1, 2, 2, 3, 4],
+        [4, 3, 2, 2, 1, 0, -1, -2],
+        [5, 2, 5, 7, 1, 63, 67, 2, 6]
+    ]
+    for test_case in test_cases:
+        input = copy(test_case)
+        expected = sorted(test_case)
+        actual = simple_quick_sort(test_case)
+        assert expected == actual, f'simple_quick_sort fail: {input=}, {expected=}, {actual=}'
