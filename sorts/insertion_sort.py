@@ -2,7 +2,7 @@ from typing import List
 from copy import copy
 
 
-def insertion_sort(l: List[int]):
+def insertion_sort(arr: List[int]):
     '''
     iter from idx 1 to last idx, called i
         iter from idx i-1 to 0, called j
@@ -12,16 +12,17 @@ def insertion_sort(l: List[int]):
             else
                 break
     '''
-    if len(l) <= 1:
-        return l
-    for i in range(1, len(l)):
+    if len(arr) <= 1:
+        return arr
+
+    for i in range(1, len(arr)):
         for j in range(i-1, -1, -1):
-            if l[j+1] < l[j]:
-                l[j+1], l[j] = l[j], l[j+1]
+            if arr[j+1] < arr[j]:
+                arr[j+1], arr[j] = arr[j], arr[j+1]
                 continue
             break
 
-    return l
+    return arr
 
 
 if __name__ == '__main__':
