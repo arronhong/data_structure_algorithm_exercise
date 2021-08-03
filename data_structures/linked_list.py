@@ -153,6 +153,20 @@ class LinkedList:
         post.next = cur.next
         cur.next = None
 
+    def reverse(self):
+        if self.empty():
+            return
+
+        cur = self.head
+        post = None
+        while cur.next is not None:
+            front = cur.next
+            cur.next = post
+            post = cur
+            cur = front
+        cur.next = post
+        self.head = cur
+
 
 if __name__ == '__main__':
     ll = LinkedList()
@@ -224,3 +238,14 @@ if __name__ == '__main__':
     assert '1,2,3' == ll.join_value()
     ll.remove(1)
     assert '2,3' == ll.join_value()
+
+    ll.push_back(4)
+    ll.push_back(5)
+    assert '2,3,4,5' == ll.join_value()
+    ll.reverse()
+    assert '5,4,3,2' == ll.join_value()
+    ll.pop_back()
+    ll.pop_back()
+    ll.pop_back()
+    ll.reverse()
+    assert '5' == ll.join_value()
