@@ -55,6 +55,8 @@ class LinkedList:
         """removes end item and returns its value"""
         if self.empty():
             return
+
+        # only head
         if self.head.next is None:
             cur = self.head
             self.head = None
@@ -99,11 +101,13 @@ class LinkedList:
 
         cur = self.head
         while index > 1:
-            cur = cur.next
             if cur is None:
                 raise IndexError('not enough nodes')
-
+            cur = cur.next
             index -= 1
+
+        if cur is None:
+            raise IndexError('not enough nodes')
 
         node = Node(data)
         node.next = cur.next
@@ -122,11 +126,14 @@ class LinkedList:
         cur = self.head
         post = None
         while index > 0:
-            if cur.next is None:
+            if cur is None:
                 raise IndexError('not enough nodes')
             post = cur
             cur = cur.next
             index -= 1
+
+        if cur is None:
+            raise IndexError('not enough nodes')
 
         post.next = cur.next
         cur.next = None
@@ -139,11 +146,10 @@ class LinkedList:
         cur = self.head
         post = None
         while cur.data != data:
-            if cur.next is None:
-                raise ValueError('value not exist in list')
-
             post = cur
             cur = cur.next
+            if cur is None:
+                raise ValueError('value not exist in list')
 
         # data is on first node
         if post is None:
@@ -159,13 +165,12 @@ class LinkedList:
 
         cur = self.head
         post = None
-        while cur.next is not None:
+        while cur is not None:
             front = cur.next
             cur.next = post
             post = cur
             cur = front
-        cur.next = post
-        self.head = cur
+        self.head = post
 
 
 if __name__ == '__main__':
@@ -208,6 +213,12 @@ if __name__ == '__main__':
     ll.insert(0, 1)
     ll.insert(1, 2)
     ll.insert(2, 3)
+    try:
+        ll.insert(4, 4)
+        raise AssertionError('delete out of bound should be raise')
+    except IndexError:
+        pass
+
     ll.insert(1, 4)
     assert '1,4,2,3' == ll.join_value()
     try:
@@ -217,6 +228,12 @@ if __name__ == '__main__':
         pass
 
     ll.delete(0)
+    try:
+        ll.delete(3)
+        raise AssertionError('delete out of bound should be raise')
+    except IndexError:
+        pass
+    assert '4,2,3' == ll.join_value()
     ll.delete(1)
     ll.delete(1)
     assert '4' == ll.join_value()
