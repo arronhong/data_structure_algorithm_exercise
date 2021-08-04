@@ -39,14 +39,15 @@ def build_max_heap(arr: list):
         max_heapify(arr, i)
 
 
-def iterative_max_heapify(arr, node_idx):
+def iterative_max_heapify(arr, node_idx, heap_size = None):
+    heap_size = heap_size or len(arr)
     while True:
         largest = node_idx
         l = left_child(node_idx)
         r = right_child(node_idx)
-        if l < len(arr) and arr[l] > arr[largest]:
+        if l < heap_size and arr[l] > arr[largest]:
             largest = l
-        if r < len(arr) and arr[r] > arr[largest]:
+        if r < heap_size and arr[r] > arr[largest]:
             largest = r
         if largest != node_idx:
             swap(arr, largest, node_idx)
