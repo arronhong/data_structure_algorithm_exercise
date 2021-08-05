@@ -13,82 +13,96 @@ def parent(i):
     return math.floor((i-1)/2)
 
 
-def swap(A, i, j):
-    A[i], A[j] = A[j], A[i]
-
-
-def max_heapify(A: list, idx: int, heap_size: int = None):
-    """
-    When it is called, MAX-HEAPIFY assumes that the binary trees rooted at
-    LEFT(i) and RIGHT(i) are maxheaps
-    """
-    heap_size = heap_size or len(A)
-
-    largest = idx
-    l = left_child(idx)
-    r = right_child(idx)
-    if l < heap_size and A[l] > A[largest]:
-        largest = l
-    if r < heap_size and A[r] > A[largest]:
-        largest = r
-    if largest != idx:
-        swap(A, largest, idx)
-        max_heapify(A, largest, heap_size)
+def swap(arr, i, j):
+    arr[i], arr[j] = arr[j], arr[i]
 
 
 class HeapUnderflow(Exception):
     pass
 
 
-def maximum(A: list):
-    if len(A) < 1:
-        raise HeapUnderflow()
+class MaxPriorityQueue:
+    def __init__(self, arr: list):
+        self._heap = arr
+        self._build_heap()
 
-    return A[0]
+    def _build_heap(self):
+        last_non_leaf = math.floor((len(self._heap)-1)/2)
+        for i in range(last_non_leaf, -1, -1):
+            self._heapify(i)
 
+    def _heapify(self, idx: int):
+        largest = idx
+        l = left_child(idx)
+        r = right_child(idx)
+        if l < len(self._heap) and self._heap[l] > self._heap[largest]:
+            largest = l
+        if r < len(self._heap) and self._heap[r] > self._heap[largest]:
+            largest = r
+        if largest != idx:
+            swap(self._heap, largest, idx)
+            self._heapify(largest)
 
-def extract_max(A: list):
-    if len(A) < 1:
-        raise HeapUnderflow()
+    def is_empty(self):
+        return not len(self._heap)
 
-    swap(A, 0, len(A)-1)
-    max = A.pop()
-    max_heapify(A, 0)
-    return max
+    def maximum(self):
+        if self.is_empty():
+            raise HeapUnderflow()
 
+        return self._heap[0]
 
-def increase_key(A: list, i, key):
-    if A[i] > key:
-        raise ValueError('increased key should bigger then original')
+    def extract_max(self):
+        if self.is_empty():
+            raise HeapUnderflow('heap is empty')
 
-    # A[i] = key
-    # while i > 0 and A[i] > A[parent(i)]:
-    #     swap(A, i, parent(i))
-    #     i = parent(i)
+        swap(self._heap, 0, len(self._heap)-1)
+        maximum = self._heap.pop()
+        self._heapify(0)
+        return maximum
 
-    # improment: 利用類似insertion sort的概念
-    while i > 0 and A[parent(i)] < key:
-        A[i] = A[parent(i)]
-        i = parent(i)
-    A[i] = key
+    def increase_key(self, idx, key):
+        if not 0 <= idx < len(self._heap):
+            raise IndexError('index out of range')
+        if self._heap[idx] > key:
+            raise ValueError('increased key should bigger then original')
 
+        while idx > 0 and self._heap[parent(idx)] < key:
+            self._heap[idx] = self._heap[parent(idx)]
+            idx = parent(idx)
 
-def insert(A: list, key):
-    # assume -1 is -inf
-    A.append(-1)
-    increase_key(A, len(A)-1, key)
+        self._heap[idx] = key
 
+    def insert(self, key):
+        # just append a dummy value(or -inf) to creating new node then increase
+        # the key
+        self._heap.append(key-1)
+        self.increase_key(len(self._heap)-1, key)
+
+    def __str__(self):
+        return str(self._heap)
 
 
 if __name__ == '__main__':
-    A = [15,13,9,5,12,8,7,4,0,6,2,1]
-    assert 15 == extract_max(A)
-    assert [13,12,9,5,6,8,7,4,0,1,2] == A,f'extract_max fail,actual={A}'
+    max_priority_queue = MaxPriorityQueue([0,1,2,4,5,6,7,8,9,12,13,15])
+    assert 15 == max_priority_queue.extract_max()
+    assert 13 == max_priority_queue.extract_max()
+    assert 12 == max_priority_queue.extract_max()
 
-    A = [1]
-    assert 1 == extract_max(A)
-    assert [] == A, f'extract_max fail, actual={A}'
+    assert 9 == max_priority_queue.maximum()
+    assert 9 == max_priority_queue.maximum()
 
-    A = [15,13,9,5,12,8,7,4,0,6,2,1]
-    insert(A, 10)
-    assert [15,13,10,5,12,9,7,4,0,6,2,1,8] == A, f'insert fail, actual={A}'
+    expected = max_priority_queue._heap[:]
+    val_of_3 = expected[3]
+    expected = set(expected)
+    expected.remove(val_of_3)
+    expected.add(15)
+    max_priority_queue.increase_key(3, 15)
+    assert 15 == max_priority_queue.maximum()
+    assert expected == set(max_priority_queue._heap)
+
+    expected = set(max_priority_queue._heap[:])
+    expected.add(20)
+    max_priority_queue.insert(20)
+    assert 20 == max_priority_queue.maximum()
+    assert expected == set(max_priority_queue._heap)
