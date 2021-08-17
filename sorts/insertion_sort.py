@@ -16,11 +16,12 @@ def insertion_sort(arr: List[int]):
         return arr
 
     for i in range(1, len(arr)):
-        for j in range(i-1, -1, -1):
-            if arr[j+1] < arr[j]:
-                arr[j+1], arr[j] = arr[j], arr[j+1]
-                continue
-            break
+        key = arr[i]
+        j = i
+        while j > 0 and arr[j-1] > key:
+            arr[j] = arr[j-1]
+            j -= 1
+        arr[j] = key
 
     return arr
 
