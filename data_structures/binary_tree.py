@@ -6,7 +6,7 @@ class Node:
         self.data = data
         self.left: Optional[Node] = None
         self.right: Optional[Node] = None
-        self.parent: Optional[None] = None
+        self.parent: Optional[Node] = None
 
 
 def preorder(n: Optional[Node]):
