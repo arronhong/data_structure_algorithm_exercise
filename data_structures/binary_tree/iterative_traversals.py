@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 
 class Node:
@@ -9,7 +9,7 @@ class Node:
 
 
 def preorder(root: Optional[Node]):
-    stack = [root]
+    stack: List[Node] = [root]
     while any(stack):
         cur = stack.pop()
         yield cur.val
@@ -21,49 +21,43 @@ def preorder(root: Optional[Node]):
 
 def space_optimized_preorder(root: Optional[Node]):
     # stack
-    right_children = []
+    rights: List[Node] = []
     cur = root
-    while cur or any(right_children):
+    while cur or any(rights):
         if not cur:
-            cur = right_children.pop()
+            cur = rights.pop()
 
         yield cur.val
         if cur.right is not None:
-            right_children.append(cur.right)
+            rights.append(cur.right)
         cur = cur.left
 
 
 def inorder(root: Optional[Node]):
-    parents = []
+    # 1. Push the current node to Stack and set current = current->left until current is NULL
+    # 2. If current is NULL and stack is not empty then
+    #   a) Pop the top item from stack.
+    #   b) Print the popped item, set current = popped_item->right
+    #   c) Go to first step
+    # 3. If current is NULL and stack is empty then we are done.
+    parents: List[Node] = []
     cur = root
-    while cur:
-        while cur.left is not None:
+    while cur or any(parents):
+        if cur:
             parents.append(cur)
             cur = cur.left
-
-        yield cur.val
-        # go to next
-        if cur.right is not None:
-            cur = cur.right
         else:
-            # find a parent who has right child
-            # visit parent and to go right child
-            while any(parents):
-                cur = parents.pop()
-                yield cur.val
-                if cur.right is not None:
-                    cur = cur.right
-                    break
-                else:
-                    return
+            cur = parents.pop()
+            yield cur.val
+            cur = cur.right
 
 
 def levelorder(n: Optional[Node]):
     if n is None:
         return
 
-    fifo = [n]
-    while len(fifo):
+    fifo: List[Node] = [n]
+    while any(fifo):
         n = fifo.pop(0)
         if n.left is not None:
             fifo.append(n.left)
