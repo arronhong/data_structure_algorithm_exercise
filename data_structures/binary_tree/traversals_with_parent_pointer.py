@@ -10,15 +10,6 @@ class Node:
 
 
 def preorder(n: Optional[Node]):
-    if n is None:
-        return
-
-    yield n.data
-    yield from preorder(n.left)
-    yield from preorder(n.right)
-
-
-def iterative_preorder(n: Optional[Node]):
     """
     while not all nodes are visited
         visit current
@@ -55,15 +46,6 @@ def left_most(n: Node):
 
 
 def inorder(n: Optional[Node]):
-    if n is None:
-        return
-
-    yield from inorder(n.left)
-    yield n.data
-    yield from inorder(n.right)
-
-
-def iterative_inorder(n: Optional[Node]):
     """
     go to left most
     while not all nodes are visited
@@ -95,15 +77,6 @@ def iterative_inorder(n: Optional[Node]):
             n = n.parent
 
 
-def postorder(n: Optional[Node]):
-    if n is None:
-        return
-
-    yield from postorder(n.left)
-    yield from postorder(n.right)
-    yield n.data
-
-
 def left_or_right_most(n: Node):
     while True:
         if n.left is not None:
@@ -113,7 +86,7 @@ def left_or_right_most(n: Node):
         else:
             return n
 
-def iterative_postorder(n: Optional[Node]):
+def postorder(n: Optional[Node]):
     """
     go to left or right most
     while not all nodes are visited
@@ -140,20 +113,6 @@ def iterative_postorder(n: Optional[Node]):
                 n = n.parent
         else:
             n = n.parent
-
-
-def levelorder(n: Optional[Node]):
-    if n is None:
-        return
-
-    fifo = [n]
-    while len(fifo):
-        n = fifo.pop(0)
-        if n.left is not None:
-            fifo.append(n.left)
-        if n.right is not None:
-            fifo.append(n.right)
-        yield n.data
 
 
 if __name__ == '__main__':
@@ -186,9 +145,5 @@ if __name__ == '__main__':
         return a
     root = make_tree()
     assert 'a,b,d,e,g,h,c,f,i' == ','.join(preorder(root))
-    assert 'a,b,d,e,g,h,c,f,i' == ','.join(iterative_preorder(root))
     assert 'd,b,g,e,h,a,f,i,c' == ','.join(inorder(root))
-    assert 'd,b,g,e,h,a,f,i,c' == ','.join(iterative_inorder(root))
     assert 'd,g,h,e,b,i,f,c,a' == ','.join(postorder(root))
-    assert 'd,g,h,e,b,i,f,c,a' == ','.join(iterative_postorder(root))
-    assert 'a,b,c,d,e,f,g,h,i' == ','.join(levelorder(root))
