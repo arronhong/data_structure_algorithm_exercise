@@ -40,16 +40,18 @@ def quick_sort(arr: list):
     if len(arr) <= 1:
         return arr
 
-    def _quick_sort(arr: list, start: int, end: int, pivot: int) -> list:
+    def _quick_sort(arr: list, start: int, end: int) -> list:
+        # use end index to be pivot
+        pivot = end
         new_pivot_idx = partition(arr, start, end, pivot)
         if new_pivot_idx > start + 1:
-            _quick_sort(arr, start, new_pivot_idx - 1, new_pivot_idx - 1)
+            _quick_sort(arr, start, new_pivot_idx - 1)
         if new_pivot_idx < end - 1:
-            _quick_sort(arr, new_pivot_idx + 1, end, end)
+            _quick_sort(arr, new_pivot_idx + 1, end)
 
         return arr
 
-    return _quick_sort(arr, 0, len(arr)-1, len(arr)-1)
+    return _quick_sort(arr, 0, len(arr)-1)
 
 
 def simple_quick_sort(arr: list):
