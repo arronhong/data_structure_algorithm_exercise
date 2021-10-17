@@ -67,9 +67,72 @@ class BinarySearchTree:
                 return key, key
         return max_lt, min_gt
 
-    def remove(self, val):
-        # TODO
-        pass
+    def remove(self, key):
+        def find_target_and_its_parent():
+            par = None
+            tar = self.root
+            while tar is not None:
+                if key == tar.key:
+                    break
+                elif key < tar.key:
+                    par = tar
+                    tar = tar.left
+                else:
+                    par = tar
+                    tar = tar.right
+            if tar is None:
+                return None, None
+            else:
+                return tar, par
+
+        def remove_from_parent(p, n):
+            if n.left is not None:
+                if p is None:
+                    self.root = n.left
+                elif p.left is n:
+                    p.left = n.left
+                else:
+                    p.right = n.left
+            elif n.right is not None:
+                if p is None:
+                    self.root = n.right
+                elif p.left is n:
+                    p.left = n.right
+                else:
+                    p.right = n.right
+            else:
+                if p is None:
+                    self.root = None
+                elif p.left is n:
+                    p.left = None
+                else:
+                    p.right = None
+
+        tar, par = find_target_and_its_parent()
+        if not tar:
+            return
+
+        if all((tar.left, tar.right)):
+            par_next_node = tar
+            next_node = tar.right
+            while next_node.left is not None:
+                par_next_node = next_node
+                next_node = next_node.left
+
+            next_node_bak = Node(next_node.key)
+            remove_from_parent(par_next_node, next_node)
+            if par is None:
+                self.root = next_node_bak
+            elif tar is par.left:
+                par.left = next_node_bak
+            else:
+                par.right = next_node_bak
+
+            next_node_bak.left = tar.left
+            next_node_bak.right = tar.right
+            tar.left = tar.right = None
+        else:
+            remove_from_parent(par, tar)
 
     def insert(self, key):
         n = Node(key)
@@ -112,3 +175,15 @@ if __name__ == '__main__':
     assert (25, 28) == bst.close_to(27)
     assert (30, None) == bst.close_to(45)
     assert (25, 25) == bst.close_to(25)
+    keys.remove(12)
+    bst.remove(12)
+    assert ','.join(str(k) for k in sorted(keys)) == inorder(bst.root)
+    keys.remove(18)
+    bst.remove(18)
+    assert ','.join(str(k) for k in sorted(keys)) == inorder(bst.root)
+    keys.remove(29)
+    bst.remove(29)
+    assert ','.join(str(k) for k in sorted(keys)) == inorder(bst.root)
+    keys.remove(30)
+    bst.remove(30)
+    assert ','.join(str(k) for k in sorted(keys)) == inorder(bst.root)
