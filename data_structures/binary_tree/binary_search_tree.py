@@ -20,6 +20,14 @@ class BinarySearchTree:
 
         return bst
 
+    @classmethod
+    def from_list_use_recursive(cls, arr: List[int]):
+        bst = cls()
+        for k in arr:
+            bst.insert_recursive(k)
+
+        return bst
+
     def first(self) -> Optional[int]:
         cur = self.root
         if cur is None:
@@ -128,6 +136,27 @@ class BinarySearchTree:
                 else:
                     cur = cur.right
 
+    def insert_recursive(self, key):
+        if self.root is None:
+            self.root = Node(key)
+            return
+
+        def insert(root, key):
+            if root is None:
+                return
+            if key <= root.key:
+                if root.left is None:
+                    root.left = Node(key)
+                else:
+                    insert(root.left, key)
+            else:
+                if root.right is None:
+                    root.right = Node(key)
+                else:
+                    insert(root.right, key)
+
+        insert(self.root, key)
+
 
 def inorder(n: Node):
     def _inorder(n: Node):
@@ -143,6 +172,8 @@ def inorder(n: Node):
 if __name__ == '__main__':
     keys = [18,12,25,4,15,25,30,1,13,17,28,3,14,29]
     bst = BinarySearchTree.from_list(keys)
+    assert ','.join(str(k) for k in sorted(keys)) == inorder(bst.root)
+    bst = BinarySearchTree.from_list_use_recursive(keys)
     assert ','.join(str(k) for k in sorted(keys)) == inorder(bst.root)
     assert 1 == bst.first()
     assert 30 == bst.last()
