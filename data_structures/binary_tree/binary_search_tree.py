@@ -68,89 +68,65 @@ class BinarySearchTree:
         return max_lt, min_gt
 
     def remove(self, key):
-        def find_target_and_its_parent():
-            par = None
-            tar = self.root
-            while tar is not None:
-                if key == tar.key:
-                    break
-                elif key < tar.key:
-                    par = tar
-                    tar = tar.left
-                else:
-                    par = tar
-                    tar = tar.right
-            if tar is None:
-                return None, None
+        def new_root(root):
+            if root is None:
+                return None
+
+            if root.left is None:
+                return root.right
+            elif root.right is None:
+                return root.left
+
+            # root has two children
+            succ = root.right
+            succ_par = root
+            while succ.left is not None:
+                succ_par = succ
+                succ = succ.left
+
+            succ.left = root.left
+            if succ is not root.right:
+                succ_par.left = succ.right
+                succ.right = root.right
+            return succ
+
+        pre = None
+        cur = self.root
+        while cur is not None and cur.key != key:
+            pre = cur
+            if key < cur.key:
+                cur = cur.left
             else:
-                return tar, par
+                cur = cur.right
 
-        def remove_from_parent(p, n):
-            if n.left is not None:
-                if p is None:
-                    self.root = n.left
-                elif p.left is n:
-                    p.left = n.left
-                else:
-                    p.right = n.left
-            elif n.right is not None:
-                if p is None:
-                    self.root = n.right
-                elif p.left is n:
-                    p.left = n.right
-                else:
-                    p.right = n.right
-            else:
-                if p is None:
-                    self.root = None
-                elif p.left is n:
-                    p.left = None
-                else:
-                    p.right = None
-
-        tar, par = find_target_and_its_parent()
-        if not tar:
-            return
-
-        if all((tar.left, tar.right)):
-            par_next_node = tar
-            next_node = tar.right
-            while next_node.left is not None:
-                par_next_node = next_node
-                next_node = next_node.left
-
-            next_node_bak = Node(next_node.key)
-            remove_from_parent(par_next_node, next_node)
-            if par is None:
-                self.root = next_node_bak
-            elif tar is par.left:
-                par.left = next_node_bak
-            else:
-                par.right = next_node_bak
-
-            next_node_bak.left = tar.left
-            next_node_bak.right = tar.right
-            tar.left = tar.right = None
+        if pre is None:
+            self.root = new_root(cur)
+        elif cur is pre.left:
+            pre.left = new_root(cur)
         else:
-            remove_from_parent(par, tar)
+            pre.right = new_root(cur)
+        cur.left = cur.right = None
 
     def insert(self, key):
         n = Node(key)
-        pre = self.root
-        pos = None
-        while pre is not None:
-            pos = pre
-            if key <= pre.key:
-                pre = pre.left
-            else:
-                pre = pre.right
-
-        if pos is None:
+        if self.root is None:
             self.root = n
-        elif key <= pos.key:
-            pos.left = n
-        else:
-            pos.right = n
+            return
+
+        cur = self.root
+        while True:
+            if key <= cur.key:
+                if cur.left is None:
+                    cur.left = n
+                    return
+                else:
+                    cur = cur.left
+            else:
+                if cur.right is None:
+                    cur.right = n
+                    return
+                else:
+                    cur = cur.right
 
 
 def inorder(n: Node):
